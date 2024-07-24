@@ -210,6 +210,10 @@ To build Archutils from source,
 
 The full build can be done with this command: `git clone https://github.com/KoPlayz/ArchUtils.git && cd ArchUtils && sudo mkarchiso -v . && cd out`
 
+### On boot
+- On boot, use login info *arch/arch*
+- use startxfce4
+
 ## Contributing
 
 Contributions are welcome! Please fork this repository and submit a pull request with your improvements.
