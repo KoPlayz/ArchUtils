@@ -198,7 +198,17 @@ You can view all the tools below.
 
 ## Usage
 
+### Prebuilt ISO
 To use Archutils, download the iso from [releases](https://github.com/KoPlayz/ArchUtils/releases), then flash it to a usb with software like [Etcher](https://etcher.balena.io/)
+
+### Building the ISO from source
+To build Archutils from source, 
+- download the source code via the zip file, or `git clone https://github.com/KoPlayz/ArchUtils`.
+- cd into the folder: `cd ArchUtils`
+- run `sudo mkarchiso -v .`
+- the iso file will be in the out folder.
+
+The full build can be done with this command: `git clone https://github.com/KoPlayz/ArchUtils.git && cd ArchUtils && sudo mkarchiso -v . && cd out`
 
 ## Contributing
 
