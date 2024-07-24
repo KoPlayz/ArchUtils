@@ -4,7 +4,7 @@ The Archutils Rescue DVD is a modified [Archlinux](https://archlinux.org)  iso d
 it has a wide range of utilities such as archinstall, gparted, openssh, etc.
 You can view all the tools below.
 
-Username/password is *arch/arch*
+**Username/password is *arch/arch***
 
 ## Included Packages
 
