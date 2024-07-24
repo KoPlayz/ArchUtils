@@ -4,6 +4,8 @@ The Archutils Rescue DVD is a modified [Archlinux](https://archlinux.org)  iso d
 it has a wide range of utilities such as archinstall, gparted, openssh, etc.
 You can view all the tools below.
 
+Username/password is *arch/arch*
+
 ## Included Packages
 
 ### System Management
@@ -212,7 +214,7 @@ The full build can be done with this command: `git clone https://github.com/KoPl
 
 ### On boot
 - On boot, use login info *arch/arch*
-- use startxfce4
+- run **startxfce4**
 
 ## Contributing
 
