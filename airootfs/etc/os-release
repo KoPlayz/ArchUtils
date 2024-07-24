@@ -1,0 +1,8 @@
+NAME="ArchUtils"
+PRETTY_NAME="ArchUtils"
+ID=archutils
+BUILD_ID=rolling
+ANSI_COLOR="38;2;23;147;209"
+HOME_URL="http://archutils.koplayz.site"
+DOCUMENTATION_URL="http://docs.archutils.koplayz.site"
+LOGO=archtils-logo

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="default" type="empty">
+      <property name="file" type="/home/koplayz/archtils/archtils_bg.pngstring">/etc/skel/Pictures/bg.png</property>
+    </property>
+  </property>
+</channel>
