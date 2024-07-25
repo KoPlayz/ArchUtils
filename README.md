@@ -1,3 +1,6 @@
+> [!NOTE]
+> If you are looking for ArchScripts, you can find it [here](https://github.com/KoPlayz/archscripts)
+
 # Archutils Rescue DVD
 
 The Archutils Rescue DVD is a modified [Archlinux](https://archlinux.org)  iso built with archiso for system rescue, maintenance, and recovery,
