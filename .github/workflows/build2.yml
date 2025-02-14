@@ -13,7 +13,12 @@ jobs:
       - name: Install QEMU and Dependencies
         run: |
           sudo apt update
-          sudo apt install -y qemu-system-x86 qemu-utils cloud-image-utils wget
+          sudo apt install -y qemu-system-x86 qemu-utils cloud-image-utils wget openssh-client
+
+      - name: Create SSH Directory
+        run: |
+          mkdir -p ~/.ssh
+          touch ~/.ssh/known_hosts
 
       - name: Download and Prepare Arch Linux Image
         run: |
