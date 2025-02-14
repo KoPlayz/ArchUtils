@@ -1,8 +1,8 @@
 name: Build and Release Arch ISO
 
 on:
-  schedule:
-    - cron: "0 0 1 * *"  # Runs at midnight UTC on the 1st of every month
+#  schedule:
+#    - cron: "0 0 1 * *"  # Runs at midnight UTC on the 1st of every month
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
@@ -47,12 +47,18 @@ jobs:
             echo "Waiting..."
             sleep 5
           done
+          
+      - name: Setting up SSH access
+        run: |
+          echo "Checking and cleaning up known_hosts..."
+          ssh-keygen -R "[localhost]:2222" || true
 
-          echo "Setting up SSH access..."
-          if grep -q "[localhost]:2222" ~/.ssh/known_hosts; then
-            ssh-keygen -R "[localhost]:2222"
-          fi
-          ssh-keyscan -p 2222 localhost >> ~/.ssh/known_hosts
+          echo "Scanning for SSH host key..."
+          ssh-keyscan -p 2222 localhost | tee -a ~/.ssh/known_hosts
+          
+          echo "Validating known_hosts permissions..."
+          chmod 600 ~/.ssh/known_hosts
+
 
       - name: Build ISO Inside VM
         run: |
