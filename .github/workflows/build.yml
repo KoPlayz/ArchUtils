@@ -10,20 +10,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Build Arch ISO in Docker
+      - name: Install QEMU and Dependencies
         run: |
-          docker run --rm --privileged -v $PWD:/build -w /build archlinux:latest bash -c "
-            pacman -Sy --noconfirm archiso &&
-            mkdir -p work out &&
-            mkarchiso -v -w work -o out .
-          "
+          sudo apt update
+          sudo apt install -y qemu-system-x86 qemu-utils cloud-image-utils wget
 
-      - name: Rename and Move ISO
+      - name: Download and Prepare Arch Linux Image
         run: |
-          ISO_DATE=$(date -I)  # Get ISO 8601 date (YYYY-MM-DD)
+          wget https://geo.mirror.pkgbuild.com/iso/latest/archlinux-x86_64.iso -O archlinux.iso
+          qemu-img create -f qcow2 archvm.qcow2 20G
+
+      - name: Launch QEMU and Build ISO
+        run: |
+          nohup sudo qemu-system-x86_64 \
+            -m 4G \
+            -smp 2 \
+            -enable-kvm \
+            -drive file=archvm.qcow2,format=qcow2 \
+            -cdrom archlinux.iso \
+            -net user,hostfwd=tcp::2222-:22 -net nic \
+            -nographic > qemu.log 2>&1 &
+
+          echo "Waiting for VM to boot..."
+          sleep 60
+
+          echo "Setting up SSH access..."
+          ssh-keygen -f ~/.ssh/known_hosts -R "[localhost]:2222" || true
+          ssh-keyscan -p 2222 localhost >> ~/.ssh/known_hosts
+
+          scp -P 2222 -r . github@localhost:/home/github/archiso
+          ssh -p 2222 github@localhost "sudo pacman -Sy --noconfirm archiso && cd /home/github/archiso && sudo mkarchiso -v -w work -o out ."
+
+      - name: Retrieve ISO
+        run: |
+          scp -P 2222 github@localhost:/home/github/archiso/out/*.iso out/
+          ISO_DATE=$(date -I)
           ISO_NAME="ArchUtils-${ISO_DATE}.iso"
           mv out/*.iso "out/$ISO_NAME"
           echo "ISO_NAME=$ISO_NAME" >> $GITHUB_ENV
