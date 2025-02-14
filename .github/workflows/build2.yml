@@ -19,6 +19,8 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           touch ~/.ssh/known_hosts
+          chmod 700 ~/.ssh
+          chmod 600 ~/.ssh/known_hosts
 
       - name: Download and Prepare Arch Linux Image
         run: |
@@ -40,7 +42,10 @@ jobs:
           sleep 60
 
           echo "Setting up SSH access..."
-          ssh-keygen -f ~/.ssh/known_hosts -R "[localhost]:2222" || true
+          if grep -q "[localhost]:2222" ~/.ssh/known_hosts; then
+            ssh-keygen -R "[localhost]:2222"
+          fi
+
           ssh-keyscan -p 2222 localhost >> ~/.ssh/known_hosts
 
           scp -P 2222 -r . github@localhost:/home/github/archiso
