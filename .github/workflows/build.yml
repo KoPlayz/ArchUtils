@@ -1,8 +1,8 @@
 name: Build and Release Arch ISO
 
 on:
-#  schedule:
-#    - cron: "0 0 1 * *"  # Runs at midnight UTC on the 1st of every month
+  schedule:
+    - cron: "0 0 1 * *"  # Runs at midnight UTC on the 1st of every month
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
@@ -47,7 +47,7 @@ jobs:
             echo "Waiting..."
             sleep 5
           done
-          
+
       - name: Setting up SSH access
         run: |
           echo "Checking and cleaning up known_hosts..."
@@ -55,15 +55,22 @@ jobs:
 
           echo "Scanning for SSH host key..."
           ssh-keyscan -p 2222 localhost | tee -a ~/.ssh/known_hosts
-          
+
           echo "Validating known_hosts permissions..."
           chmod 600 ~/.ssh/known_hosts
 
-
-      - name: Build ISO Inside VM
+      - name: Ensure SSH is running in VM
         run: |
-          scp -P 2222 -r . github@localhost:/home/github/archiso
-          ssh -p 2222 github@localhost "sudo pacman -Sy --noconfirm archiso && cd /home/github/archiso && sudo mkarchiso -v -w work -o out ."
+          # Try starting the SSH service if it's not running
+          ssh -p 2222 -o StrictHostKeyChecking=no github@localhost "sudo systemctl start sshd || echo 'sshd is already running'"
+
+      - name: Copy files to VM and Build ISO
+        run: |
+          echo "Attempting to copy files to the VM..."
+          scp -P 2222 -r . github@localhost:/home/github/archiso || echo "SCP failed"
+
+          echo "Building ISO inside VM..."
+          ssh -vvv -p 2222 github@localhost "sudo pacman -Sy --noconfirm archiso && cd /home/github/archiso && sudo mkarchiso -v -w work -o out ."
 
       - name: Retrieve ISO
         run: |
