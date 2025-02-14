@@ -27,27 +27,35 @@ jobs:
           wget https://geo.mirror.pkgbuild.com/iso/latest/archlinux-x86_64.iso -O archlinux.iso
           qemu-img create -f qcow2 archvm.qcow2 20G
 
-      - name: Launch QEMU and Build ISO
+      - name: Launch QEMU and Wait for SSH
         run: |
-          nohup sudo qemu-system-x86_64 \
+          echo "Starting QEMU..."
+          setsid sudo qemu-system-x86_64 \
             -m 4G \
             -smp 2 \
-            -enable-kvm \
             -drive file=archvm.qcow2,format=qcow2 \
             -cdrom archlinux.iso \
             -net user,hostfwd=tcp::2222-:22 -net nic \
             -nographic > qemu.log 2>&1 &
 
           echo "Waiting for VM to boot..."
-          sleep 60
+          for i in {1..30}; do
+            if nc -z localhost 2222; then
+              echo "VM is up!"
+              break
+            fi
+            echo "Waiting..."
+            sleep 5
+          done
 
           echo "Setting up SSH access..."
           if grep -q "[localhost]:2222" ~/.ssh/known_hosts; then
             ssh-keygen -R "[localhost]:2222"
           fi
-
           ssh-keyscan -p 2222 localhost >> ~/.ssh/known_hosts
 
+      - name: Build ISO Inside VM
+        run: |
           scp -P 2222 -r . github@localhost:/home/github/archiso
           ssh -p 2222 github@localhost "sudo pacman -Sy --noconfirm archiso && cd /home/github/archiso && sudo mkarchiso -v -w work -o out ."
 
